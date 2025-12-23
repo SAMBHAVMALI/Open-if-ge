@@ -3,218 +3,429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Gift For You</title>
-    <style>
-        :root {
-            --pink-light: #ffebf0;
-            --pink-main: #ff8fa3;
-            --pink-dark: #ff4d6d;
-            --white: #ffffff;
-        }
+    <title>For You | Open When...</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Quicksand:wght@300;400;600&family=Patrick+Hand&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
+    <style>
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--pink-light);
-            color: #444;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fdf2f8; /* Pink-50 */
             overflow-x: hidden;
         }
 
-        /* Splash Screen */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--pink-main);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            cursor: pointer;
-            text-align: center;
-            font-size: 1.5rem;
-            transition: opacity 0.8s ease;
+        .font-hand {
+            font-family: 'Patrick Hand', cursive;
+        }
+        
+        .font-script {
+            font-family: 'Dancing Script', cursive;
         }
 
-        /* Envelope Grid */
-        #main-content {
-            padding: 40px 20px;
-            display: none;
-            max-width: 1000px;
-            text-align: center;
-        }
-
-        .envelope-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+        /* Envelope CSS Art */
+        .envelope-container {
+            perspective: 1000px;
         }
 
         .envelope {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px dashed var(--pink-main);
-            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
             transition: transform 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-            font-weight: bold;
-            font-size: 0.9rem;
         }
 
         .envelope:hover {
-            transform: translateY(-10px) rotate(2deg);
-            background: var(--pink-main);
-            color: white;
+            transform: translateY(-5px);
         }
 
-        /* Message Overlay */
-        #message-view {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 400px;
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            z-index: 100;
+        .envelope-flap {
+            clip-path: polygon(0 0, 50% 50%, 100% 0);
+            transform-origin: top;
+            transition: transform 0.4s ease;
+            z-index: 20;
         }
 
-        .btn {
-            background: var(--pink-main);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-weight: bold;
+        .envelope-body {
+            z-index: 10;
         }
 
-        /* Final Button */
-        #final-gift-btn {
-            display: none;
-            margin-top: 50px;
-            padding: 20px 40px;
-            background: var(--pink-dark);
-            font-size: 1.2rem;
-            animation: pulse 2s infinite;
+        .envelope-letter {
+            z-index: 5;
+            transition: transform 0.4s ease;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .envelope:hover .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        .envelope:hover .envelope-letter {
+            transform: translateY(-10px);
         }
 
-        .hidden { display: none !important; }
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(236, 72, 153, 0.6); }
+        }
+
+        .magic-glow {
+            animation: pulse-glow 2s infinite;
+        }
+
+        .paper-texture {
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="splash-screen" onclick="startApp()">
-        <h1>It is for you to feel lighter... 💝<br><small>(Click to open)</small></h1>
-    </div>
+<div id="root"></div>
 
-    <div id="main-content">
-        <h2>Choose an envelope, my love ✨</h2>
-        <div class="envelope-grid" id="envelope-container"></div>
-        <button id="final-gift-btn" class="btn" onclick="showFinalMessage()">here is one more for you 💝</button>
-    </div>
+<script type="text/babel">
 
-    <div id="message-view">
-        <h3 id="env-title"></h3>
-        <p id="msg-content" style="font-size: 1.1rem; line-height: 1.6; color: #555;"></p>
-        <div id="navigation-btns">
-            <button class="btn" id="next-btn" onclick="nextMessage()">Next Page</button>
-            <button class="btn hidden" id="back-btn" onclick="closeEnvelope()">Back to Envelopes</button>
-        </div>
-    </div>
+    // --- DATA: Messages ---
+    const envelopesData = [
+        {
+            id: 'sad',
+            label: "Open when uh feel sad",
+            color: "bg-blue-100",
+            accent: "text-blue-500",
+            messages: [
+                "I know things feel heavy right now, but please remember that tears are just your heart's way of watering your soul so you can grow.",
+                "It’s okay not to be okay. Take a deep breath, wrap yourself in a blanket, and know that this feeling is temporary.",
+                "You are stronger than this sadness. You have survived 100% of your bad days so far, and you will get through this one too.",
+                "Imagine me giving you the biggest, tightest hug right now. I'm holding you close until the storm passes.",
+                "The sun will rise again, and so will you. Be gentle with yourself today."
+            ]
+        },
+        {
+            id: 'angry',
+            label: "Open when you feel angry",
+            color: "bg-red-100",
+            accent: "text-red-500",
+            messages: [
+                "Take a deep breath. Inhale peace, exhale the chaos. Don't let a moment of anger burn a whole day of happiness.",
+                "It's valid to feel this way, but don't let the anger consume your beautiful heart. You are better than the things that upset you.",
+                "Scream into a pillow if you need to. Get it out. Then, close your eyes and find that quiet center within you.",
+                "Remember, holding onto anger is like drinking poison and expecting the other person to die. Let it go for *your* sake.",
+                "I love you even when you're mad. Actually, especially when you're mad because you look cute (don't hit me!). Cool down, love."
+            ]
+        },
+        {
+            id: 'alone',
+            label: "Open when you feel alone",
+            color: "bg-indigo-100",
+            accent: "text-indigo-500",
+            messages: [
+                "You are never truly alone. Look up at the sky; we are looking at the same moon.",
+                "I am just a text or a call away. My heart is always with you, walking right beside yours.",
+                "Solitude is a place to visit, not a place to stay. Reach out. I'm right here.",
+                "Close your eyes and feel your heartbeat. That is the rhythm of life telling you that you matter and you are loved.",
+                "Sending you a virtual hand-hold. Squeeze it tight. You are loved more than you can imagine."
+            ]
+        },
+        {
+            id: 'insecure',
+            label: "Open when you feel insecure",
+            color: "bg-purple-100",
+            accent: "text-purple-500",
+            messages: [
+                "Stop looking at yourself through the eyes of others. Look at yourself through my eyes—you are perfect.",
+                "Your worth is not measured by your productivity, your looks, or anyone else's opinion. You are worthy just by being you.",
+                "You are a masterpiece in progress. Don't be so hard on the artist.",
+                "Remember all the things you've achieved and the smiles you've created. You are enough. You have always been enough.",
+                "Confidence isn't thinking you are better than everyone else, it's realizing you have no reason to compare yourself to anyone else."
+            ]
+        },
+        {
+            id: 'sick',
+            label: "Open when you are sick",
+            color: "bg-green-100",
+            accent: "text-green-500",
+            messages: [
+                "Rest, my love. The world can wait. Your only job right now is to heal.",
+                "I wish I could be there to make you soup and tuck you in. Sending you healing vibes!",
+                "Listen to your body. Sleep as much as you need. You deserve this rest.",
+                "Imagine this message is a magic pill that makes you feel 1% better instantly. Keep reading for more magic!",
+                "Get well soon! I miss your energy, but I want you back at 100%. Take care of yourself for me."
+            ]
+        },
+        {
+            id: 'tired',
+            label: "Open when you are tired",
+            color: "bg-yellow-100",
+            accent: "text-yellow-600",
+            messages: [
+                "You’ve been running so hard lately. It’s okay to pause. You don't always have to be 'on'.",
+                "Rest is not a reward for working; it's a requirement for living. Go to sleep early tonight.",
+                "Put your phone away, dim the lights, and just breathe. You've done enough for today.",
+                "Even the sun goes down to rest every night. Allow yourself to recharge.",
+                "Sweet dreams. Tomorrow is a fresh start with new energy. For now, just drift away."
+            ]
+        },
+        {
+            id: 'fight',
+            label: "Open when you had a fight",
+            color: "bg-orange-100",
+            accent: "text-orange-500",
+            messages: [
+                "I'm sorry things got heated. I value 'us' more than being right.",
+                "Let's take a step back. We are on the same team, fighting a problem, not fighting each other.",
+                "Take some time to cool off, but remember that I love you deeply, even when we disagree.",
+                "Let's fix this. My day isn't right when we aren't okay.",
+                "I'm ready to listen whenever you're ready to talk. I love you."
+            ]
+        },
+        {
+            id: 'miss',
+            label: "Open when you miss someone",
+            color: "bg-pink-100",
+            accent: "text-pink-500",
+            messages: [
+                "Missing someone means you were lucky enough to have someone special in your life.",
+                "They say distance makes the heart grow fonder. My heart must be exploding by now.",
+                "Close your eyes. If you think of them, they are there with you in your heart.",
+                "If it's me you're missing, know that I am missing you ten times more right now.",
+                "Time moves fast. You'll be reunited before you know it. Hang in there."
+            ]
+        },
+        {
+            id: 'love',
+            label: "Open when you need love",
+            color: "bg-rose-100",
+            accent: "text-rose-500",
+            messages: [
+                "You are the most beautiful chapter in my book of life.",
+                "I love you not just for who you are, but for who I am when I am with you.",
+                "If love was a grain of sand, I'd give you a universe of beaches.",
+                "You are loved, you are cherished, and you are adored. Never forget that.",
+                "Sending you a million kisses and a giant bear hug. You are my favorite person."
+            ]
+        },
+        {
+            id: 'motivation',
+            label: "Open when you need motivation",
+            color: "bg-teal-100",
+            accent: "text-teal-600",
+            messages: [
+                " Believe you can and you're halfway there.",
+                "You didn't come this far to only come this far. Keep going!",
+                "Your potential is endless. Go do what you were created to do.",
+                "Don't watch the clock; do what it does. Keep going.",
+                "I believe in you. Now you just need to believe in yourself. Go crush it!"
+            ]
+        }
+    ];
 
-    <script>
-        const envelopeData = {
-            "Open when uh feel sad": ["Message 1: I'm here for you.", "Message 2: Take a deep breath.", "Message 3: You are loved.", "Message 4: This feeling is temporary.", "Message 5: I'm sending you the biggest hug."],
-            "Open when you feel angry": ["Message 1: It's okay to feel this way.", "Message 2: Let's count to ten together.", "Message 3: Don't let it ruin your day.", "Message 4: You are stronger than this moment.", "Message 5: I'm on your side, always."],
-            "Open when you feel alone": ["Message 1: You are never truly alone.", "Message 2: I'm just a text/call away.", "Message 3: Close your eyes and feel my hand in yours.", "Message 4: You are so precious to me.", "Message 5: I'll always be your home."],
-            "Open when you feel insecure": ["Message 1: You are perfect in my eyes.", "Message 2: Your flaws make you unique.", "Message 3: I love everything about you.", "Message 4: You are capable of amazing things.", "Message 5: Believe in yourself like I believe in you."],
-            "Open when you are sick": ["Message 1: Please rest well.", "Message 2: I wish I could bring you soup.", "Message 3: Sending healing vibes.", "Message 4: Take your meds and sleep.", "Message 5: Get well soon, my darling."],
-            "Open when you are tired": ["Message 1: You've worked so hard.", "Message 2: Put the phone down and rest.", "Message 3: Dreams are waiting for you.", "Message 4: You deserve a break.", "Message 5: Rest up, I'll be here tomorrow."],
-            "Open when you had fight": ["Message 1: I'm sorry if I hurt you.", "Message 2: We are a team.", "Message 3: I value us more than being right.", "Message 4: Let's talk when you're ready.", "Message 5: I love you, even when we disagree."],
-            "Open when you miss someone": ["Message 1: They are missing you too.", "Message 2: Distance is just a test.", "Message 3: Think of the good memories.", "Message 4: Soon you'll be together.", "Message 5: Love knows no distance."],
-            "Open when you need love": ["Message 1: I love you more than words.", "Message 2: You are my whole world.", "Message 3: You make my life brighter.", "Message 4: I'm so lucky to have you.", "Message 5: Forever and always."],
-            "Open when you need motivation": ["Message 1: You've got this!", "Message 2: I am your #1 fan.", "Message 3: Don't give up now.", "Message 4: One step at a time.", "Message 5: I believe in your dreams."]
+    // --- Components ---
+
+    const SplashScreen = ({ onComplete }) => {
+        const [visible, setVisible] = React.useState(true);
+        
+        React.useEffect(() => {
+            const timer = setTimeout(() => {
+                setVisible(false);
+                setTimeout(onComplete, 800); // Wait for fade out
+            }, 3000);
+            return () => clearTimeout(timer);
+        }, [onComplete]);
+
+        return (
+            <div className={`fixed inset-0 z-50 bg-pink-50 flex flex-col items-center justify-center transition-opacity duration-1000 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className="text-center p-8 animate-float">
+                    <i className="ph-fill ph-envelope-open-heart text-6xl text-pink-400 mb-4 inline-block"></i>
+                    <h1 className="font-script text-4xl md:text-6xl text-gray-700 mb-2">It is for you...</h1>
+                    <p className="font-quicksand text-xl text-gray-500">to feel lighter ✨</p>
+                </div>
+            </div>
+        );
+    };
+
+    const EnvelopeCard = ({ data, isRead, onClick, isMagic }) => {
+        return (
+            <button 
+                onClick={onClick}
+                className="group relative w-full aspect-[4/3] max-w-[300px] mx-auto focus:outline-none"
+            >
+                {/* Envelope Body */}
+                <div className={`absolute inset-0 ${data.color} rounded-lg shadow-lg transform transition-all duration-300 group-hover:scale-105 border-2 border-white ${isMagic ? 'magic-glow' : ''}`}>
+                    
+                    {/* Flap */}
+                    <div className="absolute top-0 left-0 w-full h-1/2 z-20 origin-top transition-transform duration-500 group-hover:-rotate-x-180">
+                         <div className={`w-full h-full ${data.color} brightness-90 clip-triangle rounded-t-lg`}></div>
+                    </div>
+                    
+                    {/* Letter Preview sticking out */}
+                    <div className="absolute top-2 left-4 right-4 h-24 bg-white shadow-sm z-10 transition-transform duration-500 group-hover:-translate-y-6 rounded-sm flex items-center justify-center">
+                        <div className="w-full px-2">
+                            <div className="h-1 bg-gray-200 mb-2 rounded w-3/4"></div>
+                            <div className="h-1 bg-gray-200 mb-2 rounded w-1/2"></div>
+                        </div>
+                    </div>
+
+                    {/* Front Pocket */}
+                    <div className="absolute bottom-0 left-0 w-full h-2/3 z-20 bg-white/30 backdrop-blur-sm rounded-b-lg overflow-hidden border-t border-white/50">
+                        <div className={`absolute inset-0 ${data.color} opacity-90 clip-pocket`}></div>
+                        <div className="absolute inset-0 flex items-center justify-center p-4 z-30">
+                            <div className="text-center">
+                                {isMagic && <i className="ph-fill ph-sparkle text-yellow-400 text-2xl mb-1 animate-pulse"></i>}
+                                <p className={`font-hand text-lg md:text-xl font-bold leading-tight ${data.accent} drop-shadow-sm`}>
+                                    {data.label}
+                                </p>
+                                {isRead && <i className="ph-bold ph-check-circle text-green-500 mt-1 text-xl"></i>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        );
+    };
+
+    const MessageView = ({ envelope, onClose, onFinish }) => {
+        const [page, setPage] = React.useState(0);
+        const [isClosing, setIsClosing] = React.useState(false);
+
+        const handleNext = () => {
+            if (page < 4) {
+                setPage(p => p + 1);
+            }
         };
 
-        let currentEnv = "";
-        let currentIdx = 0;
-        let openedCount = 0;
-        const openedEnvelopes = new Set();
+        const handleClose = () => {
+            setIsClosing(true);
+            setTimeout(onClose, 300);
+        };
 
-        function startApp() {
-            document.getElementById('splash-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-            }, 800);
-        }
-
-        const container = document.getElementById('envelope-container');
-        Object.keys(envelopeData).forEach(name => {
-            const div = document.createElement('div');
-            div.className = 'envelope';
-            div.innerText = name;
-            div.onclick = () => openEnvelope(name);
-            container.appendChild(div);
-        });
-
-        function openEnvelope(name) {
-            currentEnv = name;
-            currentIdx = 0;
-            document.getElementById('env-title').innerText = name;
-            document.getElementById('msg-content').innerText = envelopeData[name][0];
-            document.getElementById('message-view').style.display = 'block';
-            document.getElementById('next-btn').classList.remove('hidden');
-            document.getElementById('back-btn').classList.add('hidden');
-        }
-
-        function nextMessage() {
-            currentIdx++;
-            if (currentIdx < 5) {
-                document.getElementById('msg-content').innerText = envelopeData[currentEnv][currentIdx];
+        React.useEffect(() => {
+            if (page === 4) {
+                onFinish(envelope.id);
             }
-            if (currentIdx === 4) {
-                document.getElementById('next-btn').classList.add('hidden');
-                document.getElementById('back-btn').classList.remove('hidden');
-            }
-        }
+        }, [page, envelope.id, onFinish]);
 
-        function closeEnvelope() {
-            document.getElementById('message-view').style.display = 'none';
-            openedEnvelopes.add(currentEnv);
-            if (openedEnvelopes.size === 10) {
-                document.getElementById('final-gift-btn').style.display = 'inline-block';
-            }
-        }
+        return (
+            <div className={`fixed inset-0 z-40 bg-black/60 flex items-center justify-center p-4 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`bg-white w-full max-w-md min-h-[500px] rounded-2xl shadow-2xl overflow-hidden flex flex-col relative transition-transform duration-300 ${isClosing ? 'scale-95 translate-y-10' : 'scale-100'}`}>
+                    
+                    {/* Header */}
+                    <div className={`p-6 ${envelope.color} flex justify-between items-center`}>
+                        <h2 className={`font-hand text-2xl font-bold ${envelope.accent}`}>{envelope.label}</h2>
+                        <button onClick={handleClose} className="p-2 hover:bg-white/50 rounded-full transition">
+                            <i className="ph-bold ph-x text-gray-600"></i>
+                        </button>
+                    </div>
 
-        function showFinalMessage() {
-            alert("This is your personalized message: \n\nMy Dearest, you've gone through all these notes, but I want you to know that my love for you is endless. You are my sunshine and my safest place. I will always be here for you! 💝");
-        }
-    </script>
-</body>
-</html>
+                    {/* Content Area */}
+                    <div className="flex-1 p-8 flex flex-col justify-center items-center text-center relative paper-texture">
+                        <div key={page} className="animate-float">
+                            <i className={`ph-fill ph-heart text-4xl mb-6 inline-block ${envelope.accent} opacity-50`}></i>
+                            <p className="font-hand text-2xl md:text-3xl text-gray-700 leading-relaxed">
+                                "{envelope.messages[page]}"
+                            </p>
+                        </div>
+                        
+                        <div className="absolute bottom-4 left-0 w-full flex justify-center gap-1">
+                            {[0, 1, 2, 3, 4].map(i => (
+                                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === page ? `w-6 ${envelope.accent.replace('text', 'bg')}` : 'w-1.5 bg-gray-200'}`}></div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer Controls */}
+                    <div className="p-4 bg-gray-50 flex justify-between items-center border-t border-gray-100">
+                        <button 
+                            onClick={handleClose} 
+                            className="px-4 py-2 rounded-full text-gray-500 font-bold hover:bg-gray-200 transition text-sm font-quicksand"
+                        >
+                            Back to Envelopes
+                        </button>
+
+                        {page < 4 ? (
+                            <button 
+                                onClick={handleNext}
+                                className={`px-6 py-2 rounded-full text-white font-bold shadow-md transition transform hover:scale-105 ${envelope.accent.replace('text', 'bg')}`}
+                            >
+                                Next Page <i className="ph-bold ph-arrow-right inline-block ml-1"></i>
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={handleClose}
+                                className={`px-6 py-2 rounded-full text-white font-bold shadow-md transition transform hover:scale-105 bg-gray-800`}
+                            >
+                                Done <i className="ph-bold ph-check inline-block ml-1"></i>
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const MagicInputModal = ({ onClose, onGenerate }) => {
+        const [mood, setMood] = React.useState('');
+        const [isLoading, setIsLoading] = React.useState(false);
+        const [error, setError] = React.useState('');
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (!mood.trim()) return;
+            
+            setIsLoading(true);
+            setError('');
+            
+            try {
+                await onGenerate(mood);
+            } catch (err) {
+                console.error(err);
+                setError("Oops! My pen ran out of ink. Please try again.");
+                setIsLoading(false);
+            }
+        };
+
+        return (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-xl animate-float">
+                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i className="ph-fill ph-sparkle text-3xl text-yellow-500"></i>
+                    </div>
+                    <h3 className="font-hand text-2xl font-bold text-gray-800 mb-2">Magic Envelope ✨</h3>
+                    <p className="text-gray-500 mb-6 font-quicksand">Tell me how you're feeling, and I'll write a letter just for you.</p>
+                    
+                    <form onSubmit={handleSubmit}>
+                        <input 
+                            type="text" 
+                            value={mood}
+                            onChange={(e) => setMood(e.target.value)}
+                            placeholder="e.g., Anxious, Excited, Nostalgic..
